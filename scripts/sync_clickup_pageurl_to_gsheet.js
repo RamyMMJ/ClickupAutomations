@@ -2,7 +2,7 @@ import axios from "axios";
 import { google } from "googleapis";
 
 const CLICKUP_TOKEN = (process.env.CLICKUP_TOKEN || "").trim();
-const CLICKUP_LIST_ID = (process.env.CLICKUP_LIST_ID || "").trim();
+const CLICKUP_TEAM_ID = (process.env.CLICKUP_TEAM_ID || "").trim();
 
 const GOOGLE_SHEET_ID = (process.env.GOOGLE_SHEET_ID || "").trim();
 const SHEET_TAB_NAME = (process.env.SHEET_TAB_NAME || "Completed Tasks").trim();
@@ -11,7 +11,7 @@ const PAGE_URL_FIELD_NAME = (process.env.PAGE_URL_FIELD_NAME || "Page URL").trim
 const SA_JSON_RAW = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 
 if (!CLICKUP_TOKEN) throw new Error("Missing CLICKUP_TOKEN (GitHub Secret).");
-if (!CLICKUP_LIST_ID) throw new Error("Missing CLICKUP_LIST_ID (GitHub Variable/Secret).");
+if (!CLICKUP_TEAM_ID) throw new Error("Missing CLICKUP_TEAM_ID (GitHub Variable/Secret).");
 if (!GOOGLE_SHEET_ID) throw new Error("Missing GOOGLE_SHEET_ID (GitHub Variable/Secret).");
 if (!SA_JSON_RAW) throw new Error("Missing GOOGLE_SERVICE_ACCOUNT_JSON (GitHub Secret).");
 
@@ -59,31 +59,30 @@ function getCustomFieldValue(task, fieldName) {
   return "";
 }
 
-async function fetchAllTasksFromList(listId) {
+
+async function fetchAllTasksFromTeam(teamId) {
   let page = 0;
   const all = [];
 
   while (true) {
-    const res = await clickup.get(`/list/${listId}/task`, {
+    const res = await clickup.get(`/team/${teamId}/task`, {
       params: {
         include_closed: true,
         page,
+        assignees: CLICKUP_USER_ID ? [CLICKUP_USER_ID] : undefined,
       },
     });
 
     const tasks = res.data?.tasks || [];
     all.push(...tasks);
 
-    // If no more results
     if (!tasks.length) break;
-    page += 1;
-
-    // safety cap
-    if (page > 200) break;
+    page++;
   }
 
   return all;
 }
+
 
 function toIso(ms) {
   const n = Number(ms);
@@ -208,8 +207,8 @@ async function upsertByTaskId(sheets, records) {
 }
 
 async function main() {
-  console.log(`Fetching tasks from list ${CLICKUP_LIST_ID}...`);
-  const tasks = await fetchAllTasksFromList(CLICKUP_LIST_ID);
+  console.log(`Fetching tasks from list ${CLICKUP_TEAM_ID}...`);
+  const tasks = await fetchAllTasksFromTeam(CLICKUP_TEAM_ID);
   console.log(`Fetched ${tasks.length} tasks.`);
 
   const records = normalize(tasks);
