@@ -106,13 +106,24 @@ function normalize(tasks) {
 
 function buildAuth() {
   const sa = JSON.parse(SA_JSON_RAW);
+
+  if (!sa.private_key) {
+    throw new Error("Service account private_key is missing");
+  }
+
+  // Fix escaped newlines from GitHub Secrets
+  const privateKey = sa.private_key.includes("\\n")
+    ? sa.private_key.replace(/\\n/g, "\n")
+    : sa.private_key;
+
   return new google.auth.JWT(
     sa.client_email,
     null,
-    sa.private_key,
+    privateKey,
     ["https://www.googleapis.com/auth/spreadsheets"]
   );
 }
+
 
 async function getSheetsClient() {
   const auth = buildAuth();
