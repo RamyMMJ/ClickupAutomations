@@ -33,7 +33,7 @@ jobs:
       - name: Run sync
         env:
           CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
-          CLICKUP_LIST_ID: ${{ vars.CLICKUP_LIST_ID }}
+          CLICKUP_TEAM_ID: ${{ vars.CLICKUP_TEAM_ID }}
           GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
           SHEET_TAB_NAME: ${{ vars.SHEET_TAB_NAME }}
           PAGE_URL_FIELD_NAME: ${{ vars.PAGE_URL_FIELD_NAME }}
