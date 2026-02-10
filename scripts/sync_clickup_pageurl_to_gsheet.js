@@ -9,6 +9,8 @@ const SHEET_TAB_NAME = (process.env.SHEET_TAB_NAME || "Completed Tasks").trim();
 const PAGE_URL_FIELD_NAME = (process.env.PAGE_URL_FIELD_NAME || "Page URL").trim();
 
 const SA_JSON_RAW = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+console.log("SA_JSON_RAW length:", (SA_JSON_RAW || "").length);
+
 
 if (!CLICKUP_TOKEN) throw new Error("Missing CLICKUP_TOKEN (GitHub Secret).");
 if (!CLICKUP_TEAM_ID) throw new Error("Missing CLICKUP_TEAM_ID (GitHub Variable/Secret).");
