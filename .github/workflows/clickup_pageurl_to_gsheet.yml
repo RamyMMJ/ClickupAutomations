@@ -1,0 +1,41 @@
+name: Sync ClickUp Page URL to Google Sheet
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Every 6 hours (UTC). Change as you want.
+    - cron: "0 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clickup-pageurl-gsheet
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          npm install axios googleapis
+
+      - name: Run sync
+        env:
+          CLICKUP_TOKEN: ${{ secrets.CLICKUP_TOKEN }}
+          CLICKUP_LIST_ID: ${{ vars.CLICKUP_LIST_ID }}
+          GOOGLE_SHEET_ID: ${{ vars.GOOGLE_SHEET_ID }}
+          SHEET_TAB_NAME: ${{ vars.SHEET_TAB_NAME }}
+          PAGE_URL_FIELD_NAME: ${{ vars.PAGE_URL_FIELD_NAME }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: node scripts/sync_clickup_pageurl_to_gsheet.js
