@@ -1,0 +1,14 @@
+{
+  "name": "clickup-automations",
+  "version": "1.0.0",
+  "description": "GitHub Actions automation to sync ClickUp Page URL fields to Google Sheets",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync_clickup_pageurl_to_gsheet.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "googleapis": "^128.0.0"
+  }
+}
