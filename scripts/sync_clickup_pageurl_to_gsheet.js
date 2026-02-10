@@ -68,8 +68,7 @@ async function fetchAllTasksFromTeam(teamId) {
     const res = await clickup.get(`/team/${teamId}/task`, {
       params: {
         include_closed: true,
-        page,
-        assignees: CLICKUP_USER_ID ? [CLICKUP_USER_ID] : undefined,
+        page
       },
     });
 
